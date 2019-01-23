@@ -1,9 +1,6 @@
-import os
 import gzip
-import shutil
-from typing import BinaryIO
-
 import numpy as np
+import matplotlib.pyplot as plt
 
 """
 First of all, we should download and read files
@@ -13,38 +10,43 @@ Secondly, we should unzip the data, read it and than provide some sort of EDA be
 
 # UNZIP the file, than we`ll receive the ubyte file
 PATH = 'E:/Pattern Recognition/DigitRecognizer/Digit-Recognizer/data/'
-train = 'train-images-idx3-ubyte.gz'
-labels = 'train-labels-idx3-ubyte.gz'
+train = 'train-images-idx3-ubyte'
+labels = 'train-labels-idx1-ubyte'
 
 
-def unzip_file(path, prefix):# unzip the file and return new value
+#load array of images and labels 
+    
+def load_array_from_bytes(folder, prefix):
+    
+    dataType = np.dtype( 'int32' ).newbyteorder( '>' )
+    nBytes = 4 * dataType.itemsize
 
-    with gzip.open(path+prefix, 'rb') as out:
-        f = out.read()
-        out.close()
-
-    return f
-
-images = unzip_file(PATH, train)
-
-print(type(images))
-
-
-# Once we have byte files we can move further with transforming ubtes into readible format e.g. numpy array
-
-
-
-def load_ubyte(data):
-    intype = np.dtype('int32').newbyteorder('>')
-    nbytes = 4 * intype.itemsize
-    data = np.fromfile(data, dtype='ubyte')
-
-    magicBytes, nImages, width, height = np.frombuffer(data[:nbytes].tobytes(), intype)
-
-    data = data[nbytes:].astype(dtype='int32').reshape([nImages, width, height])
-
+    data = np.fromfile(folder+prefix, dtype='ubyte')
+    magicBytes, numImages, w, h = np.frombuffer( data[:nBytes].tobytes(), dataType )
+    data = data[nBytes:].astype( dtype = 'float32' ).reshape( [ numImages, w, h ] )
+    
     return data
 
+images = load_array_from_bytes(PATH, train)
+labs = load_array_from_bytes(PATH, labels)
 
-imagesArr = load_ubyte(images)
-print(imagesArr.size)
+plt.imshow(images[1, :, :], cmap = 'gray')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
