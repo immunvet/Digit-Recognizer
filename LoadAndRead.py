@@ -1,4 +1,3 @@
-import gzip
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -16,21 +15,35 @@ labels = 'train-labels-idx1-ubyte'
 
 #load array of images and labels 
     
-def load_array_from_bytes(folder, prefix):
+def load_array_from_bytes(folder, prefix, iflabel = False):
     
     dataType = np.dtype( 'int32' ).newbyteorder( '>' )
-    nBytes = 4 * dataType.itemsize
-
-    data = np.fromfile(folder+prefix, dtype='ubyte')
-    magicBytes, numImages, w, h = np.frombuffer( data[:nBytes].tobytes(), dataType )
-    data = data[nBytes:].astype( dtype = 'float32' ).reshape( [ numImages, w, h ] )
     
-    return data
+    if iflabel == False:
+        
+        nBytes = 4 * dataType.itemsize
 
-images = load_array_from_bytes(PATH, train)
-labs = load_array_from_bytes(PATH, labels)
+        data = np.fromfile(folder+prefix, dtype='ubyte')
+        magicBytes, numImages, w, h = np.frombuffer( data[:nBytes].tobytes(), dataType )
+        data = data[nBytes:].astype( dtype = 'float32' ).reshape( [ numImages, w, h ] )
+    
+        return data
+    
+    else: 
+        data = np.fromfile(folder+prefix, dtype='ubyte')[2 * dataType.itemsize:]
+        
+        return data
+
+
+
+
+        
+
+images = load_array_from_bytes(PATH, train) #images array
+labs = load_array_from_bytes(PATH, labels, iflabel=True) #labels array
 
 plt.imshow(images[1, :, :], cmap = 'gray')
+
 
 
 
