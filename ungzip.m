@@ -19,3 +19,12 @@ for i=1:count
 end
 
 fclose(fid);
+
+%%
+lbls = fopen('train-labels-idx1-ubyte', 'r', 'b');
+labels=zeros([60000,1]);
+count = fread(lbls, 1, 'int32');
+for i=1:count
+    labels(i,:) = fread(lbls, w, 'int');
+end
+
